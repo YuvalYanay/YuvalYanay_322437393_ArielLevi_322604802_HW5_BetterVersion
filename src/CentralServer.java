@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
 public class CentralServer {
 
@@ -11,10 +12,13 @@ public class CentralServer {
 
         System.out.println("Server is starting.");
 
+
         ServerSocket serverSocket = null;
+        List<Client> clients;
 
         try{
             serverSocket = new ServerSocket(9999);
+            System.out.println("Server is listening on port 9999");
 
             while (true){
 

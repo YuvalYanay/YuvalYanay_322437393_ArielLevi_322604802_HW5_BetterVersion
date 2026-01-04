@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.Socket;
 
 public class MyPanel extends JPanel implements ActionListener  {
 
@@ -20,19 +22,10 @@ public class MyPanel extends JPanel implements ActionListener  {
 
         createGui();
 
-        sendBtn.addActionListener(e ->{
+        sendBtn.addActionListener(this);
 
 
 
-//            try(Socket socket = new Socket("127.0.0.1",9999)){
-//
-//
-//
-//            } catch (IOException ex) {
-//                throw new RuntimeException(ex);
-//            }
-
-        });
     }
 
 
@@ -68,6 +61,16 @@ public class MyPanel extends JPanel implements ActionListener  {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+//Client class of our shared resource
+        Client newClient = new Client(businessTxt.getText(),Integer.parseInt(businessNumTxt.getText()),(String)items.getSelectedItem(),Integer.parseInt(itemsPurchaseTxt.getText()) )
+
+        try(Socket socket = new Socket("127.0.0.1",9999)){
+
+
+
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 
