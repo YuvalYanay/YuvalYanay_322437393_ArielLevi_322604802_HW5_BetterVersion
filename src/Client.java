@@ -11,7 +11,7 @@ private int purchaseAmount;
 
 public Client(String businessName, int businessNum, String clothObject, int purchaseAmount){
 
-    this.businessName = businessName;
+    setBusinessName(businessName);
     setBusinessNum(businessNum);
     this.clothObject = clothObject;
     setPurchaseAmount(purchaseAmount);
@@ -19,6 +19,19 @@ public Client(String businessName, int businessNum, String clothObject, int purc
 }
 
 //Set methods
+
+
+public void setBusinessName(String businessName) throws IllegalArgumentException{
+
+
+    if (businessName == null || businessName.isEmpty()){
+        throw new IllegalArgumentException("Invalid business name.");
+    }
+
+    this.businessName = businessName;
+
+}
+
 
 public void setBusinessNum(int businessNum) throws IllegalArgumentException{
 

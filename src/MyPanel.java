@@ -71,8 +71,16 @@ public class MyPanel extends JPanel implements ActionListener  {
 
            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+           String outputLine;
 
            out.println(businessTxt.getText() + ", " + businessNumTxt.getText() + ", " + (String)items.getSelectedItem() + ", " + itemsPurchaseTxt.getText());
+
+
+           if ((outputLine = in.readLine()) != null){
+               System.out.println(outputLine);
+           }
+
+
 
         } catch (IOException ex) {
             throw new RuntimeException(ex);
