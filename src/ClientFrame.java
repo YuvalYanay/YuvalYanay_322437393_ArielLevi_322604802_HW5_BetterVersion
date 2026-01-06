@@ -10,7 +10,6 @@ public class ClientFrame extends JFrame {
 
         setSize(600,400);
         setDefaultCloseOperation(this.EXIT_ON_CLOSE);
-        setBackground(Color.ORANGE);
 
         MyPanel mP = new MyPanel();
 

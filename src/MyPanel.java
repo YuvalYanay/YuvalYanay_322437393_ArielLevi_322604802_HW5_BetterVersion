@@ -2,7 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 public class MyPanel extends JPanel implements ActionListener  {
@@ -62,11 +65,14 @@ public class MyPanel extends JPanel implements ActionListener  {
     public void actionPerformed(ActionEvent e) {
 
 //Client class of our shared resource
-        Client newClient = new Client(businessTxt.getText(),Integer.parseInt(businessNumTxt.getText()),(String)items.getSelectedItem(),Integer.parseInt(itemsPurchaseTxt.getText()) )
+        Client newClient = new Client(businessTxt.getText(),Integer.parseInt(businessNumTxt.getText()),(String)items.getSelectedItem(),Integer.parseInt(itemsPurchaseTxt.getText()) );
 
         try(Socket socket = new Socket("127.0.0.1",9999)){
 
+           PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+           BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+           out.println(businessTxt.getText() + ", " + businessNumTxt.getText() + ", " + (String)items.getSelectedItem() + ", " + itemsPurchaseTxt.getText());
 
         } catch (IOException ex) {
             throw new RuntimeException(ex);
