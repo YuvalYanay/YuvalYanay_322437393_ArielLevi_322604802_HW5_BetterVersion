@@ -20,6 +20,8 @@ public class MyPanel extends JPanel implements ActionListener  {
     private JLabel itemsPurchaseLbl;
     private JButton sendBtn;
     private JButton disconnectBtn;
+    private JLabel statusLbl;
+    private JLabel serverLbl;
 
     public MyPanel(){
 
@@ -27,6 +29,7 @@ public class MyPanel extends JPanel implements ActionListener  {
 
         sendBtn.addActionListener(this);
 
+        disconnectBtn.addActionListener(this);
 
 
     }
@@ -34,6 +37,10 @@ public class MyPanel extends JPanel implements ActionListener  {
 
 
     public void createGui(){
+
+
+        setLayout(new BorderLayout());
+
         businessLbl = new JLabel("Business Name: ");
         businessTxt = new JTextField(10);
         businessNumLbl = new JLabel("Business Number: ");
@@ -42,20 +49,32 @@ public class MyPanel extends JPanel implements ActionListener  {
         itemsPurchaseTxt = new JTextField(5);
         sendBtn = new JButton("Send");
         disconnectBtn = new JButton("Disconnect");
+        statusLbl = new JLabel();
+        serverLbl = new JLabel("Server Response: ");
+
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,10,10));
+
+        topPanel.add(businessLbl);
+        topPanel.add(businessTxt);
+        topPanel.add(businessNumLbl);
+        topPanel.add(businessNumTxt);
+        topPanel.add(items);
+        topPanel.add(itemsPurchaseLbl);
+        topPanel.add(itemsPurchaseTxt);
+        topPanel.add(sendBtn);
+        topPanel.add(disconnectBtn);
+
+        bottomPanel.add(serverLbl);
+        bottomPanel.add(statusLbl);
+
+        add(topPanel, BorderLayout.CENTER);
+        add(bottomPanel,BorderLayout.SOUTH);
 
 
-        add(businessLbl);
-        add(businessTxt);
-        add(businessNumLbl);
-        add(businessNumTxt);
-        add(items);
-        add(itemsPurchaseLbl);
-        add(itemsPurchaseTxt);
-        add(sendBtn);
-        add(disconnectBtn);
-
-
-        setLayout(new FlowLayout(FlowLayout.CENTER,30,20));
+        statusLbl.setVisible(false);
+        statusLbl.setOpaque(true);
+        disconnectBtn.setVisible(false);
     }
 
 
@@ -65,7 +84,6 @@ public class MyPanel extends JPanel implements ActionListener  {
     public void actionPerformed(ActionEvent e) {
 
 //Client class of our shared resource
-        Client newClient = new Client(businessTxt.getText(),Integer.parseInt(businessNumTxt.getText()),(String)items.getSelectedItem(),Integer.parseInt(itemsPurchaseTxt.getText()) );
 
         try(Socket socket = new Socket("127.0.0.1",9999)){
 
@@ -78,7 +96,29 @@ public class MyPanel extends JPanel implements ActionListener  {
 
            if ((outputLine = in.readLine()) != null){
                System.out.println(outputLine);
+
+
+               if (outputLine.contains("100")){
+                   statusLbl.setBackground(Color.GREEN);
+                   disconnectBtn.setVisible(true);
+               }
+               else {
+                   statusLbl.setBackground(Color.RED);
+               }
            }
+
+           statusLbl.setVisible(true);
+           statusLbl.setText(outputLine);
+
+
+           if (e.getSource() == disconnectBtn){
+               JOptionPane.showMessageDialog(this,"GoodBye!","Leaving Server: ", JOptionPane.INFORMATION_MESSAGE);
+               SwingUtilities.getWindowAncestor(this).dispose();
+               in.close();
+               out.close();
+               socket.close();
+           }
+
 
 
 

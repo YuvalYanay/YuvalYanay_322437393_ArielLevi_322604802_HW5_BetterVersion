@@ -34,11 +34,18 @@ public class ClientHandler implements Runnable{
             while ((inputline = in.readLine()) != null){
 
                 System.out.println("Data recieved from client " + socket.getPort() + ": " + inputline);
-                clientData = getData(inputline);
-                status = dataStatus(clientData);
+                status = dataStatus(getData(inputline));
 
                 System.out.println(status);
-                out.println("Server: " + status);
+
+                if(status.contains("100")){
+                    out.println(status);
+                }
+                else {
+                    out.println(status);
+                }
+
+
             }
 
             in.close();
@@ -64,55 +71,61 @@ public class ClientHandler implements Runnable{
 
     public String dataStatus(String[] data){
 
-        String businessName = data[0];
-        Integer businessNum = Integer.parseInt(data[1].trim());
-        String cloth = data[2];
-        Integer amount = Integer.parseInt(data[3].trim());
+
+        String businessName = data[0].trim();
+        String businessNum = data[1].trim();
+        String cloth = data[2].trim();
+        String amount = data[3].trim();
 
 
         try{
+
+            if(businessName.isEmpty() || businessNum.isEmpty() || cloth.isEmpty() || amount.isEmpty()){
+                System.out.println("Failure: Missing values");
+                return "Failure 200: Missing values";
+            }
+
+            int amountInt = Integer.parseInt(amount);
+
             for (Client client : clients){
 
-                if (businessName.equals(client.getBusinessName()) && businessNum.equals(client.getBusinessNum())){
+                if (amountInt > 50) {
+
+                    System.out.println("Failure: You can't order more than 50 units of " + cloth);
+                    return "Failure 202: You can't order more than 50 units of " + cloth;
+
+                }
+
+                if (businessName.equals(client.getBusinessName()) && !businessNum.equals(client.getBusinessNum())){
 
                     synchronized (LOCK){
-                        client.setPurchaseAmount(amount + client.getPurchaseAmount());
+                        client.setPurchaseAmount(Integer.parseInt(amount) + client.getPurchaseAmount());
                     }
 
-                    return "Update Succeeded : 100";
-
-                } else if (businessName.isEmpty() || businessNum == null || cloth.isEmpty() || amount == null) {
-
-                    return "Missing Data : 200";
+                    System.out.println("Success: Update details");
+                    return "Success 100: Update completed";
 
                 } else if (businessName.equals(client.getBusinessName()) && !businessNum.equals(client.getBusinessNum())) {
-
-                    return "Error - Unmatched data between business name and business number : 201";
-
-                } else if (amount > 50) {
-
-                    return "Error - You can't order more than 50 units of " + cloth;
-
+                    System.out.println("Failure: Unmatched data between business name and business number");
+                    return "Failure 201: Unmatched data between business name and business number";
                 }
-                else {
-                    Client newClient = new Client(businessName,businessNum,cloth,amount);
-                    clients.add(newClient);
-                    return "Success : 100";
-                }
+
 
             }
 
-
-            Client newClient = new Client(businessName,businessNum,cloth,amount);
-            clients.add(newClient);
-            return "Success : 100";
 
         } catch (IllegalArgumentException e){
 
             System.out.println(e.getMessage());
         }
 
-        return "Error - Illegal data : 203";
+        synchronized (LOCK){
+            Client newClient = new Client(businessName,Integer.parseInt(businessNum),cloth,Integer.parseInt(amount));
+            clients.add(newClient);
+            System.out.println("Success: Client added");
+            return "Success 100: Client added";
+        }
+
 
     }
 
